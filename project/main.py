@@ -1,53 +1,6 @@
 # -*- coding: utf-8 -*-
-# Random Forest Algorithm on Sonar Dataset
+
 from random import seed
-from random import randrange
-
-from math import sqrt
-from math import log
-
-
-
-
-# Make a prediction with a decision tree
-def predict(node, row):  # 预测模型分类结果
-    if row[node['index']] < node['value']:
-        if isinstance(node['left'], dict):  # isinstance是Python中的一个内建函数。是用来判断一个对象是否是一个已知的类型。
-            return predict(node['left'], row)
-        else:
-            return node['left']
-    else:
-        if isinstance(node['right'], dict):
-            return predict(node['right'], row)
-        else:
-            return node['right']
-
-
-# Make a prediction with a list of bagged trees
-def bagging_predict(trees, row):
-    predictions = [predict(tree, row) for tree in trees]  # 使用多个决策树trees对测试集test的第row行进行预测，再使用简单投票法判断出该行所属分类
-    return max(set(predictions), key=predictions.count)
-
-
-# Create a random subsample from the dataset with replacement
-def subsample(dataset, ratio):  # 创建数据集的随机子样本
-    sample = list()
-    n_sample = round(len(dataset) * ratio)  # round() 方法返回浮点数x的四舍五入值。
-    while len(sample) < n_sample:
-        index = randrange(len(dataset))  # 有放回的随机采样，有一些样本被重复采样，从而在训练集中多次出现，有的则从未在训练集中出现，此则自助采样法。从而保证每棵决策树训练集的差异性
-        sample.append(dataset[index])
-    return sample
-
-
-# Random Forest Algorithm
-def random_forest(train, test, max_depth, min_size, sample_size, n_trees, n_features):
-    trees = list()
-    for i in range(n_trees):  # n_trees表示决策树的数量
-        sample = subsample(train, sample_size)  # 随机采样保证了每棵决策树训练集的差异性
-        tree = build_tree(sample, max_depth, min_size, n_features)  # 建立一个决策树
-        trees.append(tree)
-    predictions = [bagging_predict(trees, row) for row in test]
-    return (predictions)
 
 
 # Evaluate an algorithm using a cross validation split

@@ -114,11 +114,30 @@ def build_dec_tree(dataSet, n_features, max_depth, min_size):
     return root
 
 
-# 建立随机森林，返回根节点表
-def build_rf(tree_num, train_data, n_features, max_depth, min_size):
-    forest = []
+# 抽取tree_num棵决策树的训练数据集的样本(有放回)
+def get_samples(train_data, tree_num, ratio):
+    samples = [[]]
+
+    sample_size = int(len(train_data) * ratio)
     for i in range(0, tree_num):
-        forest.append(build_dec_tree(train_data, n_features, max_depth, min_size))
+        sample = []
+        for j in range(0, sample_size):
+            index = randrange(1, len(train_data))
+            sample.append(train_data[index])
+        samples.append(sample)
+
+    return samples
+
+
+# 建立随机森林，返回根节点表
+def build_rf(tree_num, train_data, n_features, max_depth, min_size, ratio):
+    forest = []
+
+    # 为每棵决策树生成样本,ratio是抽取的样本占总数据集的比例，一般为1
+    samples = get_samples(train_data, tree_num, ratio)
+
+    for i in range(0, tree_num):
+        # 每个决策树使用的样本应该用bootstrap有放回抽取
+        sample = samples[i]
+        forest.append(build_dec_tree(sample, n_features, max_depth, min_size))
     return forest
-
-
